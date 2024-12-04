@@ -46,14 +46,11 @@ public class Day4 {
         dy.put("DOWNLEFT", 1);
     }
 
-    private static boolean checkXMAS(List<List<Character>> input, String direction, 
-            int x, int y, int R, int C) {
-        Character ch = input.get(y).get(x);
-        if (ch != 'X') return false;
+    private static boolean checkWord(List<List<Character>> input, String direction, 
+            int x, int y, int R, int C, String wordToCheck) {
         String word = "";
         while(x >= 0 && y >= 0 && x < C && y < R) {
-            System.out.println(direction + ":" + word);
-            if (word.length() < 4) {
+            if (word.length() < wordToCheck.length()) {
                 word += input.get(y).get(x);
             } else {
                 break;
@@ -61,22 +58,50 @@ public class Day4 {
             x += dx.get(direction);
             y += dy.get(direction);
         }
-        return word.equals("XMAS");
+        return word.equals(wordToCheck);
     }
 
-    public static void main(String args[]) {
-        List<List<Character>> input = getInput("input.txt");
+    private static boolean checkX_MAS(List<List<Character>> input, int x, int y, int R, int C) {
+        Character ch = input.get(y).get(x);
+        if (ch != 'A') return false;
+        if ((checkWord(input, "DOWNRIGHT", x - 1, y - 1, R, C, "MAS") 
+                || checkWord(input, "UPLEFT", x + 1, y + 1, R, C, "MAS"))
+                && (checkWord(input, "DOWNLEFT", x + 1, y - 1, R, C, "MAS") 
+                || checkWord(input, "UPRIGHT", x - 1, y + 1, R, C, "MAS"))) {
+            return true;
+        }
+        return false;
+    }
+
+    private static void part1(List<List<Character>> input) {
         int count = 0;
         int R = input.size();
         int C = input.get(0).size();
         for (int x = 0; x < C; x++) {
             for (int y = 0; y < R; y++) {
                 for (String dir: dx.keySet()) {
-                    System.out.println(x + "," + y);
-                    if (checkXMAS(input, dir, x, y, R, C)) count++;
+                    if (checkWord(input, dir, x, y, R, C, "XMAS")) count++;
                 }
             }
         }
         System.out.println("Answer: " + count);
+    }
+
+    private static void part2(List<List<Character>> input) {
+        int count = 0;
+        int R = input.size();
+        int C = input.get(0).size();
+        for (int x = 0; x < C; x++) {
+            for (int y = 0; y < R; y++) {
+                if (checkX_MAS(input, x, y, R, C)) count++;
+            }
+        }
+        System.out.println("Answer: " + count);
+    }
+
+    public static void main(String args[]) {
+        List<List<Character>> input = getInput("input.txt");
+        part1(input);
+        part2(input);
     }
 }
