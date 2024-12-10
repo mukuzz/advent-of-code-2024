@@ -32,9 +32,7 @@ public class Day10 {
   private static void dfs(List<List<Integer>> input, int x, int y, AtomicInteger count,
       boolean[][] visited) {
     int num = input.get(y).get(x);
-    System.out.print(x + "," + y + ":" + num + " - ");
     if (num == 9) {
-      System.out.println("");
       if (!visited[y][x]) {
         count.incrementAndGet();
       }
@@ -51,19 +49,37 @@ public class Day10 {
     }
   }
 
-  public static void main(String[] args) {
-    List<List<Integer>> input = readInput("Day10/sampleInput.txt");
-    System.out.println(input);
+  private static void dfs2(List<List<Integer>> input, int x, int y, AtomicInteger count) {
+    int num = input.get(y).get(x);
+    if (num == 9) {
+      count.incrementAndGet();
+      return;
+    }
+    for (int i = 0; i < 4; i++) {
+      int nx = x + dx[i];
+      int ny = y + dy[i];
+      if (nx >= 0 && ny >= 0 && nx < input.get(0).size() && ny < input.size()
+          && input.get(ny).get(nx) == num + 1) {
+        dfs2(input, nx, ny, count);
+      }
+    }
+  }
 
-    AtomicInteger count = new AtomicInteger(0);
+  public static void main(String[] args) {
+    List<List<Integer>> input = readInput("Day10/input.txt");
+
+    AtomicInteger count1 = new AtomicInteger(0);
+    AtomicInteger count2 = new AtomicInteger(0);
     for (int y = 0; y < input.size(); y++) {
       for (int x = 0; x < input.get(0).size(); x++) {
         if (input.get(y).get(x) == 0) {
           boolean[][] visited = new boolean[input.size()][input.get(0).size()];
-          dfs(input, x, y, count, visited);
+          dfs(input, x, y, count1, visited);
+          dfs2(input, x, y, count2);
         }
       }
     }
-    System.out.println("Result: " + count);
+    System.out.println("Result: " + count1);
+    System.out.println("Result: " + count2);
   }
 }
